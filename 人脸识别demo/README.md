@@ -49,16 +49,9 @@ pip install flask opencv-python face_recognition pymysql -i https://pypi.tuna.ts
 - macOS: `brew install mysql`
 
 #### 2.2 设置数据库密码
-编辑 `data_base_init.py` 文件，修改数据库密码：
-```python
-# 第9行，替换为你的MySQL密码
-password = "你的MySQL密码"
-```
-
-同样修改 `app.py` 文件中的数据库密码：
-```python
-# 第9行，替换为相同的密码
-password = "你的MySQL密码" 
+编辑 `config.ini` 文件，修改数据库密码(密码不用加引号)：
+```ini
+DataBase_Password = your_password
 ```
 
 #### 2.3 初始化数据库
@@ -78,13 +71,13 @@ python data_base_init.py
 ```bash
 python app.py
 ```
-# =====================================================================================================================================
-### 重要提示： 若运行代码提示face_recognition模块未安装,请执行以下命令：
+
+### **重要提示： 若运行代码提示face_recognition模块未安装,请执行以下命令：**
 ```bash
+# 原因未知，可能是face_recognition模块的安装问题，执行以上命令后，再次运行app.py即可。
 pip install setuptools
 ```
-# 原因未知，可能是face_recognition模块的安装问题，执行以上命令后，再次运行app.py即可。
-# =====================================================================================================================================
+
 成功启动后，控制台显示：
 ```
 视频源 0 初始化成功
@@ -127,13 +120,6 @@ pip install setuptools
 
 #### 4. 停止识别
 点击"停止识别"按钮，系统停止人脸识别，但视频流继续显示。
-
-### Web界面功能
-
-#### 主界面布局
-- **视频显示区** - 中央大窗口，显示实时视频流
-- **控制按钮** - 顶部三个按钮：开始识别、停止识别、注册新人脸
-- **状态显示** - 按钮下方显示系统状态信息
 
 #### 状态信息说明
 - **状态** - 运行中/已停止
@@ -275,18 +261,12 @@ video_sources = [
 ]
 ```
 
-修改第246行选择视频源：
-```python
-face_rec_sys = FaceRecognitionSystem(video_sources[1])  # 选择本地摄像头
-```
-
 ### 识别参数调整
 在 `app.py` 第188行调整识别阈值：
 ```python
-face_matchs = face_rec.compare_faces(self.Known_faces,face_encoding,tolerance=0.35)
+face_matches = face_rec.compare_faces(self.Known_faces,face_encoding,tolerance=0.35)
 ```
-
-阈值范围：0.0-1.0，值越小要求越严格
+阈值范围：0.3-0.38(亚洲人推荐值)，值越小要求越严格
 
 ### 数据库配置
 修改数据库连接参数（`app.py` 第14-24行）：
@@ -301,24 +281,7 @@ self.DB_CONFIG = {
 }
 ```
 
-## 安全注意事项
 
-### 数据安全
-- 定期备份MySQL数据库
-- 设置强密码保护数据库
-- 限制数据库访问权限
-
-### 隐私保护
-- 仅收集必要的人脸数据
-- 遵守当地隐私法规
-- 提供数据删除功能
-
-### 网络安全
-- 在生产环境中使用HTTPS
-- 限制Web服务访问权限
-- 定期更新系统补丁
-
-## 扩展功能开发
 
 ### 添加人脸识别历史记录
 可以新增数据表记录识别历史：
@@ -330,28 +293,6 @@ CREATE TABLE recognition_history (
     confidence FLOAT
 );
 ```
-
-### 实现批量人脸导入
-开发脚本批量导入人脸图片：
-```python
-def batch_import_faces(image_folder):
-    for image_file in os.listdir(image_folder):
-        # 提取姓名，注册人脸
-        name = os.path.splitext(image_file)[0]
-        # 处理逻辑...
-```
-
-### 移动端适配
-优化界面支持移动设备：
-```css
-@media (max-width: 768px) {
-    .video-container img {
-        width: 100%;
-        height: auto;
-    }
-}
-```
-
 ## 技术支持
 
 ### 日志调试
@@ -367,18 +308,12 @@ def batch_import_faces(image_folder):
 - 系统响应时间
 - 资源使用情况
 
-### 更新维护
-- 定期检查依赖包更新
-- 备份重要数据和配置
-- 监控系统运行状态
-
 ## 联系信息
 
 如有问题或建议，请通过以下方式联系：
-- 提交Issue到项目仓库
-- 查看README.md获取更多技术细节
+- GitHub仓库：https://github.com/Heureka-L/Face_recognition_lock
+- 提交Issue到项目仓库（若要使用github联系我获取访问权限）
 - 参考info.txt了解代码结构
-
 ---
 
 **版本：** v1.1  
