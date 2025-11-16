@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>人脸识别系统demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .video-container { text-align: center; margin: 20px 0; }
+        .controls { margin: 20px 0; text-align: center; }
+        button { padding: 10px 20px; margin: 0 10px; font-size: 16px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .status-running { background: #d4edda; color: #155724; }
+        .status-stopped { background: #f8d7da; color: #721c24; }
+        .upload-form { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><center>人脸识别系统demo</center></h1>
+        
+        <div class="controls">
+            <button onclick="startRecognition()">开始识别</button>
+            <button onclick="stopRecognition()">停止识别</button>
+            <button onclick="registerNewFace()">注册新人脸</button>
+        </div>
+        
+        <div id="status" class="status"></div>
+        
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" width="640" height="480">
+        </div>
+    </div>
+
+    <script>
+        async function getStatus() {
+            try {
+                const response = await fetch('/get_status');
+                const data = await response.json();
+                updateStatus(data);
+            } catch (error) {
+                console.error('获取状态失败:', error);
+            }
+        }
+        
+        function updateStatus(data) {
+            const statusDiv = document.getElementById('status');
+            let statusText = `状态: ${data.is_running ? '运行中' : '已停止'} | 已知人脸: ${data.known_faces_count}`;
+            if (data.sys_msg) {
+                statusText += ` | ${data.sys_msg}`;
+            }
+            if (data.is_register) {
+                statusText += ` | 正在注册: ${data.register_name}`;
+            }
+            statusDiv.textContent = statusText;
+            statusDiv.className = `status ${data.is_running ? 'status-running' : 'status-stopped'}`;
+        }
+        
+        async function startRecognition() {
+            try {
+                const response = await fetch('/start_recognition', {method: 'POST'});
+                const result = await response.json();
+                alert(result.message);
+                getStatus();
+            } catch (error) {
+                alert('启动识别失败: ' + error.message);
+            }
+        }
+        
+        async function stopRecognition() {
+            try {
+                const response = await fetch('/stop_recognition', {method: 'POST'});
+                const result = await response.json();
+                alert(result.message);
+                getStatus();
+            } catch (error) {
+                alert('停止识别失败: ' + error.message);
+            }
+        }
+        
+        async function registerNewFace() {
+            const name = prompt('请输入要注册的人脸姓名:');
+            if (name && name.trim()) {
+                try {
+                    const response = await fetch('/register_new_face', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({name: name.trim()})
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    getStatus();
+                } catch (error) {
+                    alert('注册失败: ' + error.message);
+                }
+            }
+        }
+        
+        // 初始加载状态
+        getStatus();
+        setInterval(getStatus, 2000); // 每2秒刷新状态
+    </script>
+</body>
+</html>
