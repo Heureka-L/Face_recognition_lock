@@ -2,12 +2,14 @@
 #  pip install pymysql cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
 # =================================================================================================
 import pymysql as db
+import  configparser
 
-# 数据库密码
-# ===================================================================================================
-# 此处输入数据库密码
-password = "your_password" 
-# ===================================================================================================
+# ==========================从ini文件导入数据库密码=======================
+# 创建配置解析器
+config = configparser.ConfigParser()
+config.read('.config.ini', encoding='utf-8')
+password = config.get('mysql', 'DataBase_Password')  # 从ini文件的mysql节中获取DataBase_Password的值
+# ====================================================================
 
 def main():
     global password

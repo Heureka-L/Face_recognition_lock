@@ -235,7 +235,6 @@ def main():
     app = Flask(__name__)
 
     # ==========================从ini文件导入数据库密码=======================
-    password = ''
     # 创建配置解析器
     config = configparser.ConfigParser()
     config.read('.config.ini',encoding='utf-8')
