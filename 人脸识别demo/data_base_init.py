@@ -8,7 +8,8 @@ import  configparser
 # 创建配置解析器
 config = configparser.ConfigParser()
 config.read('.config.ini', encoding='utf-8')
-password = config.get('mysql', 'DataBase_Password')  # 从ini文件的mysql节中获取DataBase_Password的值
+# 从ini文件的mysql节中获取DataBase_Password的值
+password = config.get('mysql', 'DataBase_Password')
 # ====================================================================
 
 def main():

@@ -40,7 +40,21 @@
 # 使用清华镜像源加速安装
 pip install flask opencv-python face_recognition pymysql -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
+#### 问题处理：<br>
+- face_reconition 库安装失败<br>
+face_recognition库依赖于dlib库运行，在安装face_reconition库前需要先安装dlib库
+- dlib库安装<br>
+dlib 是 Python 中一个强大的人脸识别库，但由于其依赖 C++ 编译和复杂的依赖关系，安装过程可能比较困难。<br>
+在安装dlib前需要先安装：<br>
+1、安装 Visual Studio Build Tools：https://visualstudio.microsoft.com/zh-hans/visual-cpp-build-tools/
+2、cmake：https://cmake.org/download/ （找到Windows x64 Installer下载并安装）<br>
+dlib和face_recognition安装：
+```bash
+pip install dlib -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install face_recognition 
+```
 
+不出意外的话face_recognition库就能正常安装了，安装不了联系我解决.jpg
 ### 2. 配置MySQL数据库
 
 #### 2.1 安装MySQL
@@ -72,7 +86,7 @@ python data_base_init.py
 python app.py
 ```
 
-### **重要提示： 若运行代码提示face_recognition模块未安装,请执行以下命令：**
+### **重要提示： 若运行代码提示face_recognition模块未安装或未检测到人脸识别模型,请执行以下命令：**
 ```bash
 # 原因未知，可能是face_recognition模块的安装问题，执行以上命令后，再次运行app.py即可。
 pip install setuptools
@@ -80,7 +94,7 @@ pip install setuptools
 
 成功启动后，控制台显示：
 ```
-视频源 0 初始化成功
+视频源 XXX 初始化成功
 视频流状态：True
  * Running on http://127.0.0.1:8888
 ```
@@ -280,8 +294,6 @@ self.DB_CONFIG = {
     "database": "face_recognition_db"
 }
 ```
-
-
 
 ### 添加人脸识别历史记录
 可以新增数据表记录识别历史：
