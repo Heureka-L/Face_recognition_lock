@@ -1,4 +1,3 @@
-# 佛祖保佑，永无BUG
 #
 #                   _ooOoo_
 #                  o8888888o
@@ -244,7 +243,7 @@ def main():
     video_sources = [
         r'http://192.168.1.1:8080/?action=stream',  # IP摄像头
         0,  # 本地摄像头
-        r'sources/32673695682-1-30064.mp4'  # 备用视频文件
+        r'sources/Mediastorm_TIM.mp4'  # 备用测试视频文件
     ]
 
     face_rec_sys = None
