@@ -38,7 +38,7 @@
 
 ```bash
 # 使用清华镜像源加速安装
-pip install flask opencv-python face_recognition pymysql -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install flask opencv-python opencv-contrib-python pymysql  pillow face_recognition  -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 #### 问题处理：<br>
 - face_reconition 库安装失败<br>

@@ -7,7 +7,7 @@ import  configparser
 # ==========================从ini文件导入数据库密码=======================
 # 创建配置解析器
 config = configparser.ConfigParser()
-config.read('.config.ini', encoding='utf-8')
+config.read('config/.config.ini', encoding='utf-8')
 # 从ini文件的mysql节中获取DataBase_Password的值
 password = config.get('mysql', 'DataBase_Password')
 # ====================================================================
