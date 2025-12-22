@@ -123,11 +123,18 @@ project/
 
 ### config/.config.ini
 ```ini
+# 数据库
 [mysql]
+# 数据库密码
 DataBase_Password = your_database_password
+
+# 摄像头配置
+[camera]
+# IP摄像头URL，如果没有IP摄像头，请留空
+IP_Camera_URL = 
 ```
 
-需要将 `your_database_password` 替换为实际的数据库密码。
+需要将 `your_database_password` 替换为实际的数据库密码。如果使用IP摄像头，还需要配置 `IP_Camera_URL` 项。
 
 ## 数据库结构
 

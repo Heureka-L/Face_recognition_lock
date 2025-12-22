@@ -21,28 +21,28 @@
 #            佛祖保佑 永无BUG
 #
 from flask import Flask, render_template, Response, jsonify, request
-import threading
 import configparser # 配置文件解析库
 from modules.SmartLock import SmartLock
 
 def main():
     app = Flask(__name__)
 
-    # ==========================从ini文件导入数据库密码=======================
+    # ==========================从ini文件导入配置=======================
     # 创建配置解析器
     config = configparser.ConfigParser()
     config.read('config/.config.ini',encoding='utf-8')
     password = config.get('mysql','DataBase_Password') #从ini文件的mysql节中获取DataBase_Password的值
+    ip_camera_url = config.get('camera', 'IP_Camera_URL', fallback='')  # 从ini文件的camera节中获取IP_Camera_URL的值
     # ====================================================================
 
     # 尝试使用IP摄像头，如果失败则使用本地摄像头
-    video_sources = [
-        r'http://192.168.1.1:8080/?action=stream',  # IP摄像头
-        0,  # 本地摄像头
-    ]
+    video_sources = []
+    if ip_camera_url:  # 如果配置了IP摄像头URL，则添加到视频源列表
+        video_sources.append(ip_camera_url)  # IP摄像头
+    video_sources.extend([0])  # 本地摄像头
     face_rec_sys = None
     for source in video_sources:
-        face_rec_sys = SmartLock(source,password) # 用本地摄像头
+        face_rec_sys = SmartLock(source,password)
         if face_rec_sys.video_status:
             print(f"视频源 {source} 初始化成功")
             break

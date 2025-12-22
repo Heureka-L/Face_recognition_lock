@@ -14,7 +14,7 @@ project/
 ├── app.py                 # Flask主应用
 ├── data_base_init.py      # 数据库初始化脚本
 ├── config/
-│   └── .config.ini        # 数据库配置文件
+│   └── .config.ini        # 配置文件（包含数据库和摄像头配置）
 ├── modules/
 │   ├── SmartLock.py       # 智能锁核心类
 │   └── FaceRecognitionDB.py # 数据库管理类
@@ -24,6 +24,23 @@ project/
 │   └── entered.html       # 人脸录入页面模板
 └── static/                # 静态资源文件夹
 ```
+
+## 配置文件说明
+
+### config/.config.ini
+```ini
+# 数据库
+[mysql]
+# 数据库密码
+DataBase_Password = your_database_password
+
+# 摄像头配置
+[camera]
+# IP摄像头URL，如果没有IP摄像头，请留空
+IP_Camera_URL = 
+```
+
+需要将 `your_database_password` 替换为实际的数据库密码。如果使用IP摄像头，还需要配置 `IP_Camera_URL` 项，例如：`http://192.168.1.1:8080/?action=stream`
 
 ## 数据库设计
 
@@ -302,8 +319,9 @@ def entered():
    pip install pymysql cryptography face_recognition opencv-python flask pillow numpy
    ```
 
-2. 配置数据库：
+2. 配置系统：
    - 修改 `config/.config.ini` 中的数据库密码
+   - 如使用IP摄像头，配置 `IP_Camera_URL` 项
    - 运行 `python data_base_init.py` 初始化数据库
 
 3. 配置Flask Session：
