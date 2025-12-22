@@ -26,7 +26,7 @@ def main():
     
     try:
         # 创建数据库
-        create_db_sql = "CREATE DATABASE IF NOT EXISTS face_recognition_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+        create_db_sql = "CREATE DATABASE IF NOT EXISTS smartsock_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
         cursor.execute(create_db_sql)
         print("数据库创建成功")
         
@@ -35,11 +35,22 @@ def main():
         
         # 创建人脸编码数据表  
         create_table_sql = """
-        CREATE TABLE IF NOT EXISTS face_encodings (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            face_encoding JSON NOT NULL,
-            create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        CREATE TABLE admin_users(
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            username VARCHAR(50) NOT NULL UNIQUE COMMENT '管理员用户名',
+            password VARCHAR(255) NOT NULL COMMENT '加密后的密码',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员账户表';
+
+        CREATE TABLE face_features (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            username VARCHAR(50) NOT NULL COMMENT '用户名',
+            face_encoding JSON NOT NULL COMMENT '128维人脸特征向量',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_username (username)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸特征存储表';
         """
         cursor.execute(create_table_sql)
         print("数据表创建成功")

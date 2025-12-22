@@ -9,7 +9,7 @@ class DataBaseManager:
             "passwd": password,
             "charset": "utf8mb4",
             "port": 3306,
-            "database": "face_recognition_db",
+            "database": "smartlock_db",
             "autocommit": True  # 自动提交事务
         }
     
