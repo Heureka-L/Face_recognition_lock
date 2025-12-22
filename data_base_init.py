@@ -31,10 +31,10 @@ def main():
         print("数据库创建成功")
         
         # 选择数据库
-        cursor.execute("USE face_recognition_db")
+        cursor.execute("USE smartsock_db")
         
         # 创建人脸编码数据表  
-        create_table_sql = """
+        create_table1_sql = """
         CREATE TABLE admin_users(
             id INT PRIMARY KEY AUTO_INCREMENT,
             username VARCHAR(50) NOT NULL UNIQUE COMMENT '管理员用户名',
@@ -42,7 +42,8 @@ def main():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员账户表';
-
+        """
+        create_table2_sql = """
         CREATE TABLE face_features (
             id INT PRIMARY KEY AUTO_INCREMENT,
             username VARCHAR(50) NOT NULL COMMENT '用户名',
@@ -52,7 +53,8 @@ def main():
             INDEX idx_username (username)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸特征存储表';
         """
-        cursor.execute(create_table_sql)
+        cursor.execute(create_table1_sql)
+        cursor.execute(create_table2_sql)
         print("数据表创建成功")
         
         # 提交更改
