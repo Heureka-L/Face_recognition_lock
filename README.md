@@ -12,7 +12,20 @@
 - Web界面展示
 - 门锁状态控制
 
+## 项目成员
+
+- 项目负责人：[Heureka-L](https://github.com/Heureka-L)
+- 开发成员：[李四](https://github.com/lisi), [王五](https://github.com/wangwu)
+
 系统采用五层架构设计，具有良好的模块化结构和扩展性。详细的系统架构请参见[System_Architecture.md](System_Architecture.md)文件。
+
+## 文档资料
+
+为了更好地理解和维护本项目，我们提供了以下详细文档：
+
+- [系统架构文档](doc/System_Architecture.md) - 详细介绍系统的整体架构设计
+- [开发文档](doc/Development_Document.md) - 包含项目的开发指南和技术细节
+- [控制流程文档](doc/ControlFlow.md) - 描述智能锁的控制流程和工作原理
 
 ## 技术栈
 
