@@ -1,58 +1,41 @@
 # =================================================================================================
-#  pip install pymysql cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
+#  pip install sqlite3 -i https://pypi.tuna.tsinghua.edu.cn/simple
 # =================================================================================================
-import pymysql as db
-import  configparser
-
-# ==========================从ini文件导入数据库密码=======================
-# 创建配置解析器
-config = configparser.ConfigParser()
-config.read('config/.config.ini', encoding='utf-8')
-# 从ini文件的mysql节中获取DataBase_Password的值
-password = config.get('mysql', 'DataBase_Password')
-# ====================================================================
+import sqlite3
+import os
 
 def main():
-    global password
-    # 连接数据库服务器（不指定具体数据库）
-    connection = db.connect(
-        host="localhost",
-        user="root",
-        passwd=password,
-        charset="utf8mb4"
-    )
+    # 确保database目录存在
+    db_path = os.path.join('database', 'smartlock.db')
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
     
+    # 连接数据库
+    connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
     
     try:
-        # 创建数据库
-        create_db_sql = "CREATE DATABASE IF NOT EXISTS smartsock_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-        cursor.execute(create_db_sql)
-        print("数据库创建成功")
-        
-        # 选择数据库
-        cursor.execute("USE smartsock_db")
-        
-        # 创建人脸编码数据表  
+        # 创建管理员用户表
         create_table1_sql = """
-        CREATE TABLE admin_users(
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            username VARCHAR(50) NOT NULL UNIQUE COMMENT '管理员用户名',
-            password VARCHAR(255) NOT NULL COMMENT '加密后的密码',
+        CREATE TABLE IF NOT EXISTS admin_users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员账户表';
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
         """
+        
+        # 创建人脸特征数据表
         create_table2_sql = """
-        CREATE TABLE face_features (
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            username VARCHAR(50) NOT NULL COMMENT '用户名',
-            face_encoding JSON NOT NULL COMMENT '128维人脸特征向量',
+        CREATE TABLE IF NOT EXISTS face_features (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            face_encoding TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            INDEX idx_username (username)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸特征存储表';
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
         """
+        
         cursor.execute(create_table1_sql)
         cursor.execute(create_table2_sql)
         print("数据表创建成功")
@@ -61,7 +44,7 @@ def main():
         connection.commit()
         print("数据库和表结构创建完成！")
         
-    except db.Error as e:
+    except sqlite3.Error as e:
         print(f"创建失败: {e}")
     finally:
         cursor.close()

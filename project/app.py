@@ -35,7 +35,7 @@ def main():
     config.read('config/.config.ini',encoding='utf-8')
     password = config.get('mysql','DataBase_Password') #从ini文件的mysql节中获取DataBase_Password的值
     # ====================================================================
-
+ 
     # 尝试使用IP摄像头，如果失败则使用本地摄像头
     cam_source = r'http://192.168.1.1:8080/?action=stream' # IP摄像头
     samrt_lock = SmartLock(cam_source,password) # 用本地摄像头

@@ -9,9 +9,9 @@ import threading
 from FaceRecognitionDB import DataBaseManager
 
 class SmartLock(DataBaseManager): #继承DataBaseManager类
-    def __init__(self,video_path,password):
+    def __init__(self,video_path,db_path=None):
         # 初始化数据库管理器
-        super().__init__(password)  #初始化DataBaseManager类的属性
+        super().__init__(db_path)  #初始化DataBaseManager类的属性
         self.video_cap = cv2.VideoCapture(video_path)
         self.video_status = self.video_cap.isOpened() #检测视频流是否正常打开
         self.is_running = False # 人脸识别是否正在运行

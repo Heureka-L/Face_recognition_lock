@@ -31,7 +31,6 @@ def main():
     # 创建配置解析器
     config = configparser.ConfigParser()
     config.read('config/.config.ini',encoding='utf-8')
-    password = config.get('mysql','DataBase_Password') #从ini文件的mysql节中获取DataBase_Password的值
     ip_camera_url = config.get('camera', 'IP_Camera_URL', fallback='')  # 从ini文件的camera节中获取IP_Camera_URL的值
     # ====================================================================
 
@@ -42,7 +41,7 @@ def main():
     video_sources.extend([0])  # 本地摄像头
     face_rec_sys = None
     for source in video_sources:
-        face_rec_sys = SmartLock(source,password)
+        face_rec_sys = SmartLock(source)
         if face_rec_sys.video_status:
             print(f"视频源 {source} 初始化成功")
             break

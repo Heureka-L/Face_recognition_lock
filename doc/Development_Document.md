@@ -29,45 +29,39 @@ project/
 
 ### config/.config.ini
 ```ini
-# 数据库
-[mysql]
-# 数据库密码
-DataBase_Password = your_database_password
-
 # 摄像头配置
 [camera]
 # IP摄像头URL，如果没有IP摄像头，请留空
 IP_Camera_URL = 
 ```
 
-需要将 `your_database_password` 替换为实际的数据库密码。如果使用IP摄像头，还需要配置 `IP_Camera_URL` 项，例如：`http://192.168.1.1:8080/?action=stream`
+如果使用IP摄像头，需要配置 `IP_Camera_URL` 项，例如：`http://192.168.1.1:8080/?action=stream`
 
 ## 数据库设计
 
 ### 数据库结构
-系统使用名为 `face_recognition_db` 的数据库，包含两个表：
+系统使用 SQLite 数据库，数据库文件存储在项目根目录的 `database` 文件夹中，文件名为 `smartlock.db`，包含两个表：
 
 #### admin_users 表（管理员账户表）
 ```sql
-CREATE TABLE admin_users(
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL UNIQUE COMMENT '管理员用户名',
-    password VARCHAR(255) NOT NULL COMMENT '加密后的密码',
+CREATE TABLE IF NOT EXISTS admin_users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员账户表';
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 #### face_features 表（人脸特征存储表）
 ```sql
-CREATE TABLE face_features (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    username VARCHAR(50) NOT NULL COMMENT '用户名',
-    face_encoding JSON NOT NULL COMMENT '128维人脸特征向量',
+CREATE TABLE IF NOT EXISTS face_features (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    face_encoding TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_username (username)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='人脸特征存储表';
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
 ## 核心功能实现
@@ -118,7 +112,7 @@ def login():
         password = request.form['password']
         # 验证管理员账户
         user = face_rec_sys.fetch_one(
-            "SELECT * FROM admin_users WHERE username=%s AND password=%s",
+            "SELECT * FROM admin_users WHERE username=? AND password=?",
             (username, password)
         )
         if user:
@@ -204,6 +198,7 @@ def entered():
   - `fetch_one(sql, args)`: 查询单条记录
   - `fetch_all(sql, args)`: 查询多条记录
   - `insert_data(sql, args)`: 插入数据
+  - `execute_sql(sql, args)`: 执行SQL语句
 
 ## HTML模板设计
 
@@ -310,18 +305,16 @@ def entered():
 
 ### 环境要求
 - Python 3.7+
-- MySQL数据库
 - 相关Python依赖包
 
 ### 安装步骤
 1. 安装依赖：
    ```
-   pip install pymysql cryptography face_recognition opencv-python flask pillow numpy
+   pip install face_recognition opencv-python flask pillow numpy
    ```
 
 2. 配置系统：
-   - 修改 `config/.config.ini` 中的数据库密码
-   - 如使用IP摄像头，配置 `IP_Camera_URL` 项
+   - 如使用IP摄像头，配置 `config/.config.ini` 中的 `IP_Camera_URL` 项
    - 运行 `python data_base_init.py` 初始化数据库
 
 3. 配置Flask Session：

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>人脸录入</title>
+    <script>
+        function submitAction(action) {
+            document.getElementById('action').value = action;
+            document.getElementById('entryForm').submit();
+        }
+    </script>
+</head>
+<body>
+    <h1>人脸录入</h1>
+    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+    <form id="entryForm" method="POST">
+        <input type="hidden" id="action" name="action">
+        {% if registering %}
+            <input type="hidden" name="username" value="new_user">
+        {% endif %}
+        <br>
+        <button type="button" onclick="submitAction('start')">开始录入</button>
+        <button type="button" onclick="submitAction('restart')">重新录入</button>
+        <button type="button" onclick="submitAction('confirm')">确认录入</button>
+    </form>
+</body>
+</html>

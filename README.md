@@ -30,7 +30,7 @@
 ## 技术栈
 
 - **后端**: Python, Flask
-- **数据库**: MySQL
+- **数据库**: SQLite
 - **人脸识别**: face_recognition库
 - **计算机视觉**: OpenCV
 - **前端**: HTML, CSS
@@ -86,12 +86,11 @@ project/
 1. 克隆项目到本地
 2. 安装依赖包：
    ```bash
-   pip install pymysql cryptography face_recognition opencv-python flask pillow numpy
+   pip install face_recognition opencv-python flask pillow numpy
    ```
 
-3. 配置数据库：
-   - 在MySQL中创建数据库用户
-   - 修改 `config/.config.ini` 文件中的数据库密码
+3. 配置摄像头：
+   - 修改 `config/.config.ini` 文件中的 IP 摄像头 URL（可选）
 
 4. 初始化数据库：
    ```bash
