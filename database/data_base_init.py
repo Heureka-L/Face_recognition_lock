@@ -5,9 +5,13 @@ import sqlite3
 import os
 
 def main():
+    # 获取当前脚本所在目录的父目录（项目根目录）
+    import pathlib
+    project_root = pathlib.Path(__file__).parent.parent
+    # 数据库文件路径设置为项目根目录下的database文件夹
+    db_path = project_root / 'database' / 'smartlock.db'
     # 确保database目录存在
-    db_path = os.path.join('database', 'smartlock.db')
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    os.makedirs(os.path.dirname(str(db_path)), exist_ok=True)
     
     # 连接数据库
     connection = sqlite3.connect(db_path)

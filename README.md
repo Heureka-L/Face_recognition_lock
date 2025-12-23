@@ -40,7 +40,8 @@
 ```
 project/
 ├── app.py                 # Flask主应用
-├── data_base_init.py      # 数据库初始化脚本
+├── database/              # 数据库存储目录
+│   └── data_base_init.py  # 数据库初始化脚本
 ├── config/
 │   └── .config.ini        # 数据库配置文件
 ├── modules/
@@ -94,7 +95,7 @@ project/
 
 4. 初始化数据库：
    ```bash
-   python data_base_init.py
+   python database/data_base_init.py
    ```
 
 5. 运行应用：
@@ -122,15 +123,10 @@ project/
 
 ### config/.config.ini
 ```ini
-# 数据库
-[mysql]
-# 数据库密码
-DataBase_Password = your_database_password
-
 # 摄像头配置
 [camera]
 # IP摄像头URL，如果没有IP摄像头，请留空
-IP_Camera_URL = 
+IP_Camera_URL = your_ip_camera_url
 ```
 
 需要将 `your_database_password` 替换为实际的数据库密码。如果使用IP摄像头，还需要配置 `IP_Camera_URL` 项。
@@ -157,21 +153,10 @@ IP_Camera_URL =
 
 ## 注意事项
 
-1. 首次运行前必须执行 `data_base_init.py` 初始化数据库
+1. 首次运行前必须执行 `database/data_base_init.py` 初始化数据库
 2. 确保摄像头设备正常工作
 3. 数据库连接信息需正确配置
 4. 项目仍在开发中，部分功能可能尚未完善
-
-## 未来计划
-
-- 完善用户注册和登录界面
-- 增加门锁控制硬件接口
-- 优化人脸识别算法性能
-- 添加用户管理功能
-- 实现HTTPS安全通信
-- 添加开门记录日志功能
-- 支持多设备部署
-- 实现远程控制API
 
 ## 版权信息
 

@@ -12,7 +12,8 @@
 ```
 project/
 ├── app.py                 # Flask主应用
-├── data_base_init.py      # 数据库初始化脚本
+├── database/              # 数据库存储目录
+│   └── data_base_init.py  # 数据库初始化脚本
 ├── config/
 │   └── .config.ini        # 配置文件（包含数据库和摄像头配置）
 ├── modules/
@@ -315,7 +316,7 @@ def entered():
 
 2. 配置系统：
    - 如使用IP摄像头，配置 `config/.config.ini` 中的 `IP_Camera_URL` 项
-   - 运行 `python data_base_init.py` 初始化数据库
+   - 运行 `python database/data_base_init.py` 初始化数据库
 
 3. 配置Flask Session：
    - 在app.py中添加session配置以支持身份认证状态管理
