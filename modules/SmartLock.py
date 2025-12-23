@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import datetime
 import threading
 # 导入自建模块
-from FaceRecognitionDB import DataBaseManager
+from modules.FaceRecognitionDB import DataBaseManager
 
 class SmartLock(DataBaseManager): #继承DataBaseManager类
     def __init__(self,video_path,db_path=None):
@@ -79,7 +79,7 @@ class SmartLock(DataBaseManager): #继承DataBaseManager类
     def register_new_face(self,username):
         self.sys_msg = "请面向屏幕后点击开始录入"
         face_encoding_list = self.register_face_encoding.tolist() # 转化为可储存在JSON中的列表
-        sql = "INSERT INTO face_features (username, face_encoding) VALUES (%s, %s)"
+        sql = "INSERT INTO face_features (username, face_encoding) VALUES (?, ?)"
         result = self.insert_data(sql,(username, json.dumps(face_encoding_list)))
         
         if result:
@@ -93,7 +93,7 @@ class SmartLock(DataBaseManager): #继承DataBaseManager类
         
         self.is_register = False 
         self.register_face_encoding = None # 重置待注册的人脸编码
-
+                                                                                                                                
     # 人脸识别
     def _face_recognition(self):
         while self.is_running: 
@@ -178,7 +178,7 @@ class SmartLock(DataBaseManager): #继承DataBaseManager类
                 frame_bytes = buffer.tobytes()
                 yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n\r\n')
-
+    
     #开锁
     def open_lock(self):
         self.open_lock = True
@@ -187,7 +187,7 @@ class SmartLock(DataBaseManager): #继承DataBaseManager类
     #关锁
     def close_lock(self):
         self.open_lock = False
-        print('lock open')
+        print('lock closed')
     # 初始化锁状态
     def init_lock(self):
         self.close_lock()

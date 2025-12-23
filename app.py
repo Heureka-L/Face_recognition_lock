@@ -20,12 +20,15 @@
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 #            佛祖保佑 永无BUG
 #
-from flask import Flask, render_template, Response, jsonify, request
+from flask import Flask, render_template, Response, jsonify, request, session, redirect
 import configparser # 配置文件解析库
+import sys
 from modules.SmartLock import SmartLock
 
 def main():
     app = Flask(__name__)
+    # 添加secret_key以支持session
+    app.secret_key = 'your_secret_key_here'  # 在生产环境中应使用安全的随机密钥
 
     # ==========================从ini文件导入配置=======================
     # 创建配置解析器
@@ -51,22 +54,78 @@ def main():
         print("所有视频源都初始化失败，程序退出")
         exit()
 
+    # 启动智能锁服务
+    face_rec_sys.run_server()
+
     # ==========================FLASK SERVER=======================
     # 主页
     @app.route("/run",methods = ["GET","POST"])
     def index():
         if request.method == "GET":
-            render_template('index.html')
+            return render_template('run.html')
+
+    # 视频流
+    @app.route('/video_feed')
+    def video_feed():
+        return Response(face_rec_sys.generate_frame(),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
     
     # 注册
     @app.route("/login",methods = ["GET","POST"])
     def login():
-        pass
-    
+        if request.method == "GET":
+            return render_template('login.html')
+        else:
+            username = request.form['username']
+            password = request.form['password']
+            # 验证管理员账户
+            user = face_rec_sys.fetch_one(
+                "SELECT * FROM admin_users WHERE username=? AND password=?",
+                (username, password)
+            )
+            if user:
+                # 设置认证状态
+                session['authenticated'] = True
+                return redirect('/entered')
+            else:
+                # 返回错误信息
+                return render_template('login.html', error="账号或密码错误")
+            
     # 人脸录入
-    @app.route("/entered")
+    @app.route("/entered", methods=["GET", "POST"])
     def entered():
-        pass
+        # 检查用户是否已通过身份认证
+        if not session.get('authenticated'):
+            # 未通过认证，重定向到登录页面
+            return redirect('/login')
+        
+        if request.method == "GET":
+            return render_template('entered.html')
+        else:
+            action = request.form.get('action')
+            username = request.form.get('username', '')
+            
+            if action == 'start':
+                # 设置注册标志位
+                face_rec_sys.is_register = True
+                return render_template('entered.html', registering=True)
+            elif action == 'confirm':
+                # 检查是否有人脸待注册
+                if face_rec_sys.register_face_encoding is not None:
+                    # 调用注册方法
+                    face_rec_sys.register_new_face(username)
+                    # 重置注册状态
+                    face_rec_sys.is_register = False
+                    # 清除身份认证状态
+                    session['authenticated'] = False
+                    return redirect('/run')
+                else:
+                    return render_template('entered.html', error="未检测到有效人脸数据")
+            elif action == 'restart':
+                # 重新开始录入
+                face_rec_sys.is_register = True
+                face_rec_sys.register_face_encoding = None
+                return render_template('entered.html', registering=True)
     
     app.run(host='0.0.0.0',port=8888, debug=True)
 if __name__ == '__main__':

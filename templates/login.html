@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
-    <meta http-equiv=¡±Content-Type¡± content=¡±text/html charset=utf-8¡±>
-    <title>ÓÃ»§µÇÂ¼</title>
+    <title>ç™»é™†</title>
+    <meta charset="UTF-8">
 </head>
 <body>
-    <h2>ÓÃ»§µÇÂ¼</h2>
-    <form action="/login" method="post">
-        <p>ÓÃ»§Ãû: <input type="text" name="username"></p>
-        <p>ÃÜÂë: <input type="password" name="password"></p>
-        <input type="submit" value="µÇÂ¼">
+    <h1>ç™»é™†</h1>
+    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <label>ç”¨æˆ·å:</label><input type="text" name="username" required><br><br>
+        <label>å¯†ç :</label><input type="password" name="password" required><br><br>
+        <input type="submit" value="ç™»é™†">
     </form>
 </body>
 </html>
