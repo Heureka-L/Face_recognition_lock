@@ -24,11 +24,13 @@ from flask import Flask, render_template, Response, jsonify, request, session, r
 import configparser # 配置文件解析库
 import sys
 from modules.SmartLock import SmartLock
+import uuid
+
 
 def main():
     app = Flask(__name__)
     # 添加secret_key以支持session
-    app.secret_key = 'your_secret_key_here'  # 在生产环境中应使用安全的随机密钥
+    app.secret_key = str(uuid.uuid4()) # 随机密钥
 
     # ==========================从ini文件导入配置=======================
     # 创建配置解析器
@@ -53,7 +55,7 @@ def main():
     if not face_rec_sys or not face_rec_sys.video_status:
         print("所有视频源都初始化失败，程序退出")
         exit()
-
+    
     # 启动智能锁服务
     face_rec_sys.run_server()
 
@@ -63,7 +65,7 @@ def main():
     def index():
         if request.method == "GET":
             return render_template('run.html')
-
+    
     # 视频流
     @app.route('/video_feed')
     def video_feed():
@@ -91,6 +93,17 @@ def main():
                 # 返回错误信息
                 return render_template('login.html', error="账号或密码错误")
             
+    # 预览图像
+    @app.route('/preview_image')
+    def preview_image():
+        # 获取当前帧用于预览
+        frame_bytes = face_rec_sys.get_current_frame_for_preview()
+        if frame_bytes:
+            return Response(frame_bytes, mimetype='image/jpeg')
+        else:
+            # 返回一个默认图像或错误
+            return "", 404
+    
     # 人脸录入
     @app.route("/entered", methods=["GET", "POST"])
     def entered():
@@ -108,7 +121,7 @@ def main():
             if action == 'start':
                 # 设置注册标志位
                 face_rec_sys.is_register = True
-                return render_template('entered.html', registering=True)
+                return render_template('entered.html', registering=True, username=username)
             elif action == 'confirm':
                 # 检查是否有人脸待注册
                 if face_rec_sys.register_face_encoding is not None:
@@ -120,13 +133,13 @@ def main():
                     session['authenticated'] = False
                     return redirect('/run')
                 else:
-                    return render_template('entered.html', error="未检测到有效人脸数据")
+                    return render_template('entered.html', error="未检测到有效人脸数据", username=username)
             elif action == 'restart':
                 # 重新开始录入
                 face_rec_sys.is_register = True
                 face_rec_sys.register_face_encoding = None
-                return render_template('entered.html', registering=True)
-    
+                return render_template('entered.html', registering=True, username=username)
+                
     app.run(host='0.0.0.0',port=8888, debug=True)
 if __name__ == '__main__':
     main()

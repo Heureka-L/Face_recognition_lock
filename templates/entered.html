@@ -7,20 +7,90 @@
             document.getElementById('action').value = action;
             document.getElementById('entryForm').submit();
         }
+        
+        function showPreview() {
+            // 更新预览图片的src以获取最新帧，然后隐藏视频流，显示预览图片
+            var previewImg = document.getElementById('previewImage');
+            // 添加时间戳以避免浏览器缓存
+            previewImg.src = "{{ url_for('preview_image') }}?" + new Date().getTime();
+            document.getElementById('videoFeed').style.display = 'none';
+            previewImg.style.display = 'block';
+        }
+        
+        function showVideo() {
+            // 显示视频流，隐藏预览图片
+            document.getElementById('videoFeed').style.display = 'block';
+            document.getElementById('previewImage').style.display = 'none';
+        }
+        
+        function startRegistration() {
+            // 提交开始录入请求
+            document.getElementById('action').value = 'start';
+            // 提交表单后，页面会刷新并显示注册按钮，此时应该显示预览
+            document.getElementById('entryForm').submit();
+        }
+        
+        // 页面加载完成后，如果处于注册状态，则自动显示预览
+        window.onload = function() {
+            {% if registering %}
+
+                // 延迟一点时间再显示预览，确保页面状态已更新
+                setTimeout(function() {
+                    if(document.querySelector('button[onclick*="showPreview"]')) {
+                        // 页面已更新为注册状态，可以显示预览
+                        showPreview();
+                    }
+                }, 500);
+            {% endif %}
+        };
+        
+        function confirmRegistration() {
+            // 检查用户名是否已输入
+            var username = document.getElementById('username').value;
+            if (username.trim() === '') {
+                alert('请输入用户名');
+                return;
+            }
+            document.getElementById('action').value = 'confirm';
+            document.getElementById('entryForm').submit();
+        }
+        
+        function restartRegistration() {
+            // 重新开始录入
+            document.getElementById('action').value = 'restart';
+            document.getElementById('entryForm').submit();
+        }
     </script>
 </head>
 <body>
     <h1>人脸录入</h1>
-    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+    
+    <div id="videoContainer">
+        <img id="videoFeed" src="{{ url_for('video_feed') }}" width="640" height="480">
+        <img id="previewImage" src="{{ url_for('preview_image') }}" width="640" height="480" style="display: none;">
+    </div>
+    
     <form id="entryForm" method="POST">
         <input type="hidden" id="action" name="action">
+        
+        <!-- 用户名输入框 -->
+        <label for="username">用户名:</label>
+        <input type="text" id="username" name="username" value="{{ username or '' }}" placeholder="请输入用户名" required>
+        <br><br>
+        
         {% if registering %}
-            <input type="hidden" name="username" value="new_user">
+            <input type="hidden" name="registering" value="true">
         {% endif %}
+        
         <br>
-        <button type="button" onclick="submitAction('start')">开始录入</button>
-        <button type="button" onclick="submitAction('restart')">重新录入</button>
-        <button type="button" onclick="submitAction('confirm')">确认录入</button>
+        {% if not registering %}
+            <button type="button" onclick="startRegistration()">开始录入</button>
+        {% else %}
+            <button type="button" onclick="showPreview()">显示预览</button>
+            <button type="button" onclick="showVideo()">返回视频</button>
+            <button type="button" onclick="confirmRegistration()">确认录入</button>
+        {% endif %}
+        <button type="button" onclick="restartRegistration()">重新录入</button>
     </form>
 </body>
 </html>
